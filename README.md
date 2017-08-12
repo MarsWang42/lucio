@@ -4,13 +4,18 @@ Simple, intuitive, composable state management for React apps.
 Inspired by [dva](https://github.com/dvajs/dva), based on [redux](https://github.com/reactjs/redux), [redux-loop](https://github.com/redux-loop/redux-loop).
 
 ---
+## Installation
+```
+npm install --save react-lucio
+```
 
+## How to use
 
-### Example
+First, import your Lucio and create it.
 
 ```js
 import React from 'react';
-import { createLucio, Cmd, connect } from 'lucio';
+import { Lucio, Cmd, connect } from 'react-lucio';
 
 // Fake async api simulating http requests.
 const api = {
@@ -22,9 +27,12 @@ const api = {
 }
 
 // Create your Lucio
-const app = createLucio();
+const app = new Lucio();
+```
 
-// Define an elm-like architeture for your Lucio
+Then define an elm-like state management architeture for your Lucio.
+
+``` js
 app.model({
   name: 'counter',
 
@@ -52,7 +60,9 @@ app.model({
       ({ ...state, error: action.error, isLoading: true }),
   },
 });
-
+```
+Now write down your view, connect it to the store and load it to the view.
+```js
 const Counter = ({ value, dispatch }) => (
   <div>
     <div>{ value }</div>
@@ -75,8 +85,19 @@ const CounterContainer = connect(counterMapStateToProps)(Counter);
 app.view(
   <CounterContainer />
 );
-
-// Mount your Lucio onto the DOM
+```
+You're all set! Start it in your DOM now!
+```js
+// Mount your Lucio onto the DOM node <main />
 app.start('main');
-
+```
+## I want to use router?
+It can't be easier. Just import the router replace your view in to a function.
+``` js
+import { Router, Route } from 'react-lucio';
+app.view(history => (
+  <Router history={history}>
+    <Route path="/" component={CounterContainer} />
+  </Router>
+));
 ```
