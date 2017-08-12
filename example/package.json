@@ -1,0 +1,36 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server --port 8000 --hot --inline --watch-poll"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel": "6.3.13",
+    "babel-cli": "^6.3.17",
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.1",
+    "babel-plugin-transform-es3-member-expression-literals": "6.3.13",
+    "babel-plugin-transform-es3-property-literals": "6.3.13",
+    "babel-plugin-transform-object-rest-spread": "6.3.13",
+    "babel-polyfill": "6.7.2",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-register": "6.7.2",
+    "html-webpack-plugin": "1.7.0",
+    "immutable": "3.7.6",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-redux": "4.0.6",
+    "redux": "3.0.5",
+    "redux-act": "0.3.0",
+    "webpack": "1.12.11",
+    "webpack-dev-server": "1.14.1"
+  },
+  "devDependencies": {
+    "webpack-node-externals": "^1.6.0"
+  }
+}

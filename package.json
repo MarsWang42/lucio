@@ -1,0 +1,52 @@
+{
+  "name": "luci0",
+  "version": "1.0.0",
+  "description": "",
+  "author": "Mars Wang",
+  "main": "lib/index.js",
+  "directories": {
+    "doc": "docs",
+    "example": "example",
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "build": "npm run lint && babel src --out-dir lib",
+    "lint": "eslint lib",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "babel": "6.3.13",
+    "babel-cli": "^6.3.17",
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.1",
+    "babel-plugin-transform-es3-member-expression-literals": "6.3.13",
+    "babel-plugin-transform-es3-property-literals": "6.3.13",
+    "babel-plugin-transform-object-rest-spread": "6.3.13",
+    "babel-polyfill": "6.7.2",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-register": "6.7.2",
+    "eslint": "^4.4.1",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.2.0",
+    "tape": "4.5.1"
+  },
+  "license": "ISC",
+  "peerDependencies": {
+    "react": "15.x"
+  },
+  "dependencies": {
+    "invariant": "^2.2.2",
+    "is-plain-object": "^2.0.4",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-redux": "^5.0.6",
+    "redux": "3.5.2",
+    "redux-logger": "^3.0.6",
+    "redux-loop": "^3.1.2",
+    "warning": "^3.0.0"
+  }
+}
