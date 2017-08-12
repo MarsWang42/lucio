@@ -1,9 +1,9 @@
 import { Cmd } from 'redux-loop';
 import { connect } from 'react-redux';
-import createLucio from './createLucio';
+import Lucio from './lucio';
 
 export {
-  createLucio,
+  Lucio,
   Cmd,
   connect,
 };

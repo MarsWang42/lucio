@@ -69,25 +69,28 @@ const render = (container, store, view) => {
   ), container);
 };
 
-const createLucio = (config = {}) => {
-  const initialState = config.initialState || {};
+class Lucio {
+  constructor(config = {}) {
+    this._initialState = config.initialState || {};
+    this._models = [];
+  }
 
   // Handling the reducers and effects here.
-  function model(_model) {
-    this._models.push(checkModel(_model));
+  model(newModel) {
+    this._models.push(checkModel(newModel));
   }
 
   // Set up the view of the reducer.
-  function view(_view) {
+  view(newView) {
     invariant(
-      React.isValidElement(_view),
+      React.isValidElement(newView),
       'app.view: view should be a react component.',
     );
-    this._view = _view;
+    this._view = newView;
   }
 
   // Mount the app inside the container.
-  function start(container) {
+  start(container) {
     // container can be either string or domNode.
     if (typeof container === 'string') {
       container = document.querySelector(container);
@@ -121,16 +124,9 @@ const createLucio = (config = {}) => {
       applyMiddleware(logger),
     );
 
-    const store = enhancer(createStore)(combinedReducer, initialState);
+    const store = enhancer(createStore)(combinedReducer, this._initialState);
     render(container, store, this._view);
   }
+}
 
-  return {
-    _models: [],
-    model,
-    view,
-    start,
-  };
-};
-
-export default createLucio;
+export default Lucio;

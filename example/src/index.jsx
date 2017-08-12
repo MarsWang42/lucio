@@ -1,5 +1,5 @@
 import React from 'react';
-import { createLucio, Cmd, connect } from '../../src';
+import { Lucio, Cmd, connect } from '../../src';
 
 const api = {
   todos: {
@@ -17,7 +17,7 @@ const api = {
   },
 };
 
-const app = createLucio();
+const app = new Lucio();
 
 app.model({
   name: 'todos',
