@@ -116,9 +116,8 @@ const Todos = ({ todos, dispatch }) => (
           { todo.name }
         </div>
       ) : (
-        <div>
+        <div key={todo.id} >
           <strike
-            key={todo.id}
             onClick={() => {
               dispatch({
                 type: 'todos/toggleTodo',
