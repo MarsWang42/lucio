@@ -1,7 +1,7 @@
 # Lucio
 Simple, intuitive, composable state management for React apps.
 
-Inspired by [dva](https://github.com/dvajs/dva), based on [redux](https://github.com/reactjs/redux), [redux-loop](https://github.com/redux-loop/redux-loop)
+Inspired by [dva](https://github.com/dvajs/dva), based on [redux](https://github.com/reactjs/redux), [redux-loop](https://github.com/redux-loop/redux-loop).
 
 ---
 

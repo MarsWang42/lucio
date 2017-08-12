@@ -1,6 +1,6 @@
 {
-  "name": "luci0",
-  "version": "1.0.0",
+  "name": "lucio",
+  "version": "0.1.0",
   "description": "",
   "author": "Mars Wang",
   "main": "lib/index.js",
