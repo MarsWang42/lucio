@@ -6,6 +6,8 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import isPlainObject from 'is-plain-object';
 import logger from 'redux-logger';
 import { install, loop, combineReducers } from 'redux-loop';
+import { browserHistory } from 'react-router';
+import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
 
 const checkModel = (model) => {
   const _model = { ...model };
@@ -57,6 +59,11 @@ const createReducer = (model) => {
   };
 };
 
+const getViewFromRouter = (router, store) => {
+  const history = syncHistoryWithStore(browserHistory, store);
+  return router(history);
+};
+
 const isHTMLElement = node => (
   typeof node === 'object' && node !== null && node.nodeType && node.nodeName
 );
@@ -73,6 +80,7 @@ class Lucio {
   constructor(config = {}) {
     this._initialState = config.initialState || {};
     this._models = [];
+    this._config = config;
   }
 
   // Handling the reducers and effects here.
@@ -83,8 +91,8 @@ class Lucio {
   // Set up the view of the reducer.
   view(newView) {
     invariant(
-      React.isValidElement(newView),
-      'app.view: view should be a react component.',
+      typeof newView === 'function' || React.isValidElement(newView),
+      'app.view: view should be either function for routing or React element',
     );
     this._view = newView;
   }
@@ -105,19 +113,27 @@ class Lucio {
     );
 
     invariant(
-      React.isValidElement(this._view),
-      'app.view: view should be a react component.',
+      typeof this._view === 'function' || React.isValidElement(this._view),
+      'app.view: view should be either function for routing or React element',
     );
 
 
     // Create reducers according to the model
-    const reducers = {};
+    const modelReducers = {};
     for (let i = 0, l = this._models.length; i < l; i += 1) {
       const reducer = createReducer(this._models[i]);
-      reducers[this._models[i].name] = reducer;
+      modelReducers[this._models[i].name] = reducer;
     }
 
-    const combinedReducer = combineReducers({ ...reducers });
+    const extraReducers = {};
+    if (typeof this._view === 'function') {
+      extraReducers.routing = routerReducer;
+    }
+
+    const combinedReducer = combineReducers({
+      ...modelReducers,
+      ...extraReducers,
+    });
 
     const enhancer = compose(
       install(),
@@ -125,6 +141,9 @@ class Lucio {
     );
 
     const store = enhancer(createStore)(combinedReducer, this._initialState);
+    if (typeof this._view === 'function') {
+      this._view = getViewFromRouter(this._view, store);
+    }
     render(container, store, this._view);
   }
 }

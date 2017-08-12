@@ -1,5 +1,5 @@
 import React from 'react';
-import { Lucio, Cmd, connect } from '../../src';
+import { Lucio, Cmd, connect, Link, Router, Route } from '../../src';
 
 const api = {
   todos: {
@@ -155,13 +155,32 @@ const counterMapStateToProps = state => ({
 
 const CounterContainer = connect(counterMapStateToProps)(Counter);
 
-
-app.view(
-  <div>
-    <TodosContainer />
-    <CounterContainer />
-  </div>,
+const Home = () => (
+  <ul>
+    <li>
+      <Link to="/todo">Todo</Link>
+    </li>
+    <li>
+      <Link to="/counter">Counter</Link>
+    </li>
+  </ul>
 );
+
+/* Uncomment here to use view without routing. */
+// app.view(
+//   <div>
+//     <TodosContainer />
+//     <CounterContainer />
+//   </div>,
+// );
+
+app.view(history => (
+  <Router history={history}>
+    <Route path="/" component={Home} />
+    <Route path="/todo" component={TodosContainer} />
+    <Route path="/counter" component={CounterContainer} />
+  </Router>
+));
 
 app.start('main');
 
