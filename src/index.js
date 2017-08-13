@@ -1,6 +1,6 @@
 import { Cmd } from 'redux-loop';
 import { connect } from 'react-redux';
-import { Router, Route, Link } from 'react-router';
+import { Router, Route, Link, RouterContext, match } from 'react-router';
 import Lucio from './lucio';
 
 export {
@@ -9,5 +9,7 @@ export {
   connect,
   Router,
   Route,
+  RouterContext,
+  match,
   Link,
 };

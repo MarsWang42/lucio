@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --port 8000 --hot --inline --watch-poll"
+    "prod": "NODE_ENV=production node --harmony .",
+    "build": "NODE_ENV=production webpack --progress --color -p",
+    "dev": "NODE_ENV=dev webpack-dev-server --port 8000 --hot --inline --watch-poll"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +22,8 @@
     "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.24.1",
     "babel-register": "6.7.2",
+    "express": "^4.15.4",
+    "history": "^4.6.3",
     "html-webpack-plugin": "1.7.0",
     "immutable": "3.7.6",
     "react": "^15.6.1",
@@ -27,10 +31,11 @@
     "react-redux": "4.0.6",
     "redux": "3.0.5",
     "redux-act": "0.3.0",
-    "webpack": "1.12.11",
-    "webpack-dev-server": "1.14.1"
+    "webpack": "^3.5.4",
+    "webpack-dev-server": "^2.7.1"
   },
   "devDependencies": {
+    "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack-node-externals": "^1.6.0"
   }
 }

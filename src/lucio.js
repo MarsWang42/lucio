@@ -70,11 +70,17 @@ const isHTMLElement = node => (
 );
 
 const render = (container, store, view) => {
-  ReactDOM.render((
+  const provider = (
     <Provider store={store}>
       { view }
     </Provider>
-  ), container);
+  );
+  if (container) {
+    ReactDOM.render(provider, container);
+    return true;
+  } else {
+    return { provider, store };
+  }
 };
 
 class Lucio {
@@ -182,7 +188,7 @@ class Lucio {
       this._view = getViewFromRouter(this._view, store);
     }
 
-    render(container, store, this._view);
+    return render(container, store, this._view);
   }
 }
 

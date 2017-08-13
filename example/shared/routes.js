@@ -12,7 +12,15 @@ import { Router, Route } from '../../src';
 //   </div>,
 // );
 
-const routes = history => (
+export const ssrRoutes = (
+  <div>
+    <Route path="/" component={Home} />
+    <Route path="/todo" component={Todos} />
+    <Route path="/counter" component={Counter} />
+  </div>
+);
+
+export default history => (
   <Router history={history}>
     <Route path="/" component={Home} />
     <Route path="/todo" component={Todos} />
@@ -20,4 +28,3 @@ const routes = history => (
   </Router>
 );
 
-export default routes;
