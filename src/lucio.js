@@ -101,7 +101,7 @@ class Lucio {
       const newExtraReducer = newExtraReducers[newExtraReducerNames[i]];
       invariant(
         typeof newExtraReducer === 'function',
-        `app.link: ${newExtraReducerNames[i]} should be a function.`,
+        `app.link: reducer '${newExtraReducerNames[i]}' should be a function.`,
       );
       this._extraReducers[newExtraReducerNames[i]] = newExtraReducer;
     }
