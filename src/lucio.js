@@ -9,6 +9,7 @@ import { install, loop, combineReducers } from 'redux-loop';
 import { browserHistory } from 'react-router';
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
 
+// Helper function to check whether a model is valid.
 const checkModel = (model) => {
   const _model = { ...model };
   const { name, initialState, reducers, effects } = _model;
@@ -80,6 +81,7 @@ class Lucio {
   constructor(config = {}) {
     this._initialState = config.initialState || {};
     this._extraReducers = {};
+    this._enhancers = [];
     this._models = [];
     this._config = config;
   }
@@ -89,11 +91,20 @@ class Lucio {
     this._models.push(checkModel(newModel));
   }
 
+  // Load additional middlewares here.
+  use(newEnhancers) {
+    invariant(
+      Array.isArray(newEnhancers),
+      'app.use: new enhancers should be an array',
+    );
+    this._enhancers.push(...newEnhancers);
+  }
+
   // Add extra reducers here.
   link(newExtraReducers) {
     invariant(
       isPlainObject(newExtraReducers),
-      'app.model: extraReducer should be an Object',
+      'app.model: extra reducers should be an Object',
     );
     // Go through all the reducers being linked.
     const newExtraReducerNames = Object.keys(newExtraReducers);
@@ -154,15 +165,23 @@ class Lucio {
       ...this._extraReducers,
     });
 
+    // Add logger middle by default and remove it on production.
+    if (!this._config.disableLogger && process.env.NODE_ENV !== 'production') {
+      this._enhancers.push(logger);
+    }
+
     const enhancer = compose(
       install(),
-      applyMiddleware(logger),
+      applyMiddleware(...this._enhancers),
     );
 
     const store = enhancer(createStore)(combinedReducer, this._initialState);
+
+    // Create the react component for routing
     if (typeof this._view === 'function') {
       this._view = getViewFromRouter(this._view, store);
     }
+
     render(container, store, this._view);
   }
 }
