@@ -12,7 +12,7 @@ module.exports = {
     fs: 'empty'
   },
 
-  entry: ['webpack/hot/dev-server' , './src/index.jsx'],
+  entry: ['webpack/hot/dev-server', './src/index.jsx'],
 
   output: {
     path: path.join(__dirname, 'tmp'),
@@ -28,6 +28,10 @@ module.exports = {
         loaders: ['babel']
       }
     ]
+  },
+
+  resolve: {
+    extensions: ['', '.js', '.jsx'],
   },
 
   plugins: [
