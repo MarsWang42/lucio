@@ -51,6 +51,7 @@ app.model({
     }),
   },
 
+  // Your reducers
   reducers: {
     compute: (state) =>
       ({ ...state, isLoading: true }),
@@ -61,7 +62,7 @@ app.model({
   },
 });
 ```
-Now write down your view, connect it to the store and load it to the view.
+Now write down your React component, connect it to the store and load it to the view.
 ```js
 const Counter = ({ value, dispatch }) => (
   <div>
@@ -91,7 +92,7 @@ You're all set! Start it in your DOM now!
 // Mount your Lucio onto the DOM node <main />
 app.start('main');
 ```
-## I want to use router?
+## Wanna use router?
 It can't be easier. Just import the router replace your view in to a function.
 ``` js
 import { Router, Route } from 'react-lucio';
@@ -100,4 +101,15 @@ app.view(history => (
     <Route path="/" component={CounterContainer} />
   </Router>
 ));
+```
+## Wanna import some redux-flavor reducers?
+Try `app.link()`!
+```js
+import { reducer as formReducer } from 'redux-form';
+app.link({ form: formReducer });
+```
+## Wanna feed in more middlewares?
+Try `app.use()`! Note: some middlewares might not play well since we're using `redux-loop` for handling side-effects.
+```js
+app.use([yourMiddleware1, yourMiddleware2]);
 ```
