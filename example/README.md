@@ -1,4 +1,4 @@
-# `redux-elm-modules` Example
+# `Lucio` Example
 
 Open `./src/index.js` and follow along with the comments and code!
 

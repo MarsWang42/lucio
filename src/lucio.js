@@ -79,6 +79,7 @@ const render = (container, store, view) => {
 class Lucio {
   constructor(config = {}) {
     this._initialState = config.initialState || {};
+    this._extraReducers = {};
     this._models = [];
     this._config = config;
   }
@@ -86,6 +87,24 @@ class Lucio {
   // Handling the reducers and effects here.
   model(newModel) {
     this._models.push(checkModel(newModel));
+  }
+
+  // Add extra reducers here.
+  link(newExtraReducers) {
+    invariant(
+      isPlainObject(newExtraReducers),
+      'app.model: extraReducer should be an Object',
+    );
+    // Go through all the reducers being linked.
+    const newExtraReducerNames = Object.keys(newExtraReducers);
+    for (let i = 0, l = newExtraReducerNames.length; i < l; i += 1) {
+      const newExtraReducer = newExtraReducers[newExtraReducerNames[i]];
+      invariant(
+        typeof newExtraReducer === 'function',
+        `app.link: ${newExtraReducerNames[i]} should be a function.`,
+      );
+      this._extraReducers[newExtraReducerNames[i]] = newExtraReducer;
+    }
   }
 
   // Set up the view of the reducer.
@@ -118,21 +137,21 @@ class Lucio {
     );
 
 
-    // Create reducers according to the model
+    // Create reducers according to the model.
     const modelReducers = {};
     for (let i = 0, l = this._models.length; i < l; i += 1) {
       const reducer = createReducer(this._models[i]);
       modelReducers[this._models[i].name] = reducer;
     }
 
-    const extraReducers = {};
+    // Add react-router-redux reducer here.
     if (typeof this._view === 'function') {
-      extraReducers.routing = routerReducer;
+      this._extraReducers.routing = routerReducer;
     }
 
     const combinedReducer = combineReducers({
       ...modelReducers,
-      ...extraReducers,
+      ...this._extraReducers,
     });
 
     const enhancer = compose(

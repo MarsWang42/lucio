@@ -74,7 +74,7 @@ app.model({
   effects: {
     compute: (state, action) => Cmd.run(api.counter.compute, {
       successActionCreator: value => ({ type: 'counter/computeSuccess', value }),
-      failActionCreator: error => ({ type: 'todos/computeFailed', error }),
+      failActionCreator: error => ({ type: 'counter/computeFailed', error }),
       args: [action.value],
     }),
   },
@@ -165,6 +165,19 @@ const Home = () => (
     </li>
   </ul>
 );
+
+const newReducer = {
+  todo: (state = { name: 'none' }, action) => {
+    switch (action.type) {
+      case 'todos/createSuccess':
+        return { ...state, name: action.name };
+      default:
+        return state;
+    }
+  },
+};
+
+app.link(newReducer);
 
 /* Uncomment here to use view without routing. */
 // app.view(
