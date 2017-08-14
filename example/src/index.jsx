@@ -11,6 +11,7 @@ app.model(counterModel);
 app.view(routes);
 
 app.start('main');
+app.unloadModel('counter');
 
 /* Uncomment this part to try linking your own reducer. */
 // const newReducer = {

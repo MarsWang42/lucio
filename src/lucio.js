@@ -11,8 +11,8 @@ import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
 
 // Helper function to check whether a model is valid.
 const checkModel = (model) => {
-  const _model = { ...model };
-  const { name, initialState, reducers, effects } = _model;
+  const m = { ...model };
+  const { name, initialState, reducers, effects } = m;
   invariant(
     name,
     'app.model: model should have a name',
@@ -29,7 +29,7 @@ const checkModel = (model) => {
     !reducers || isPlainObject(reducers),
     'app.model: reducers should be an Object',
   );
-  return model;
+  return m;
 };
 
 const createReducer = (model) => {
@@ -94,7 +94,38 @@ class Lucio {
 
   // Handling the reducers and effects here.
   model(newModel) {
-    this._models.push(checkModel(newModel));
+    newModel = checkModel(newModel);
+    this._models.push(newModel);
+
+    // Dynamically add model if app already started.
+    if (this._store) {
+      const reducer = createReducer(newModel);
+      this._modelReducers[newModel.name] = reducer;
+      const combinedReducer = combineReducers({
+        ...this._modelReducers,
+        ...this._extraReducers,
+      });
+      this._store.replaceReducer(combinedReducer);
+    }
+  }
+
+  unloadModel(modelName) {
+    const modelIndex = this._models.findIndex(model => model.name === modelName);
+    invariant(
+      modelIndex >= 0,
+      `app.unloadModel: model '${modelName} is not mounted yet.'`,
+    );
+    this._models.splice(modelIndex, 1);
+
+    // Dynamically remove model if app already started.
+    if (this._store) {
+      delete this._modelReducers[modelName];
+      const combinedReducer = combineReducers({
+        ...this._modelReducers,
+        ...this._extraReducers,
+      });
+      this._store.replaceReducer(combinedReducer);
+    }
   }
 
   // Load additional middlewares here.
@@ -155,10 +186,10 @@ class Lucio {
 
 
     // Create reducers according to the model.
-    const modelReducers = {};
+    this._modelReducers = {};
     for (let i = 0, l = this._models.length; i < l; i += 1) {
       const reducer = createReducer(this._models[i]);
-      modelReducers[this._models[i].name] = reducer;
+      this._modelReducers[this._models[i].name] = reducer;
     }
 
     // Add react-router-redux reducer here.
@@ -167,7 +198,7 @@ class Lucio {
     }
 
     const combinedReducer = combineReducers({
-      ...modelReducers,
+      ...this._modelReducers,
       ...this._extraReducers,
     });
 
@@ -182,6 +213,9 @@ class Lucio {
     );
 
     const store = enhancer(createStore)(combinedReducer, this._initialState);
+
+    // Create a read only store api
+    this._store = { ...store };
 
     // Create the react component for routing
     if (typeof this._view === 'function') {
