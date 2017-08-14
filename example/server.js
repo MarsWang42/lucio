@@ -2,11 +2,11 @@ import React from 'react';
 import express from 'express';
 import { renderToString } from 'react-dom/server';
 import createHistory from 'history/createMemoryHistory';
-import fetchComponentData from './shared/helpers/fetchComponentData';
+import fetchComponentData from './src/helpers/fetchComponentData';
 import { Lucio, RouterContext, match } from '../src';
-import todoModel from './shared/models/todos';
-import counterModel from './shared/models/counter';
-import { ssrRoutes } from './shared/routes';
+import todoModel from './src/models/todos';
+import counterModel from './src/models/counter';
+import { ssrRoutes } from './src/routes';
 
 const app = express();
 

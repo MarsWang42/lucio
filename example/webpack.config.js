@@ -12,7 +12,7 @@ const config = {
 
   entry: {
     'app': [
-      './shared/index.jsx'
+      './src/index.jsx'
     ]
   },
 
