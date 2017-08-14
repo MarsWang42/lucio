@@ -1,6 +1,6 @@
 {
   "name": "react-lucio",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "",
   "author": "Mars Wang",
   "main": "lib/index.js",
@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "npm run lint && babel src --out-dir lib",
-    "lint": "eslint lib",
+    "lint": "eslint src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
