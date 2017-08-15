@@ -10,7 +10,7 @@ import { browserHistory } from 'react-router';
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
 
 // Helper function to check whether a model is valid.
-const checkModel = (model) => {
+function checkModel(model) {
   const m = { ...model };
   const { name, initialState, reducers, effects } = m;
   invariant(
@@ -30,9 +30,9 @@ const checkModel = (model) => {
     'app.model: reducers should be an Object',
   );
   return m;
-};
+}
 
-const createReducer = (model) => {
+function createReducer(model) {
   const handlers = {};
   const initialState = model.state;
   // Check whether certain action has side effect, if has
@@ -58,18 +58,29 @@ const createReducer = (model) => {
       return state;
     }
   };
-};
+}
 
-const getViewFromRouter = (router, store) => {
+// Replace the current reducer in the store.
+function replaceReducer() {
+  const combinedReducer = combineReducers({
+    ...this._modelReducers,
+    ...this._extraReducers,
+  });
+  this._store.replaceReducer(combinedReducer);
+}
+
+function getViewFromRouter(router, store) {
   const history = syncHistoryWithStore(browserHistory, store);
   return router(history);
-};
+}
 
-const isHTMLElement = node => (
-  typeof node === 'object' && node !== null && node.nodeType && node.nodeName
-);
+// Helper function to verify DOM node.
+function isHTMLElement(node) {
+  return typeof node === 'object' && node !== null && node.nodeType && node.nodeName;
+}
 
-const render = (container, store, view) => {
+// If container exists, render the view. Otherwise return the provider and store.
+function render(container, store, view) {
   const provider = (
     <Provider store={store}>
       { view }
@@ -81,7 +92,7 @@ const render = (container, store, view) => {
   } else {
     return { provider, store };
   }
-};
+}
 
 class Lucio {
   constructor(config = {}) {
@@ -101,14 +112,11 @@ class Lucio {
     if (this._store) {
       const reducer = createReducer(newModel);
       this._modelReducers[newModel.name] = reducer;
-      const combinedReducer = combineReducers({
-        ...this._modelReducers,
-        ...this._extraReducers,
-      });
-      this._store.replaceReducer(combinedReducer);
+      replaceReducer.call(this);
     }
   }
 
+  // Remove the model from the current app.
   unloadModel(modelName) {
     const modelIndex = this._models.findIndex(model => model.name === modelName);
     invariant(
@@ -120,15 +128,18 @@ class Lucio {
     // Dynamically remove model if app already started.
     if (this._store) {
       delete this._modelReducers[modelName];
-      const combinedReducer = combineReducers({
-        ...this._modelReducers,
-        ...this._extraReducers,
-      });
-      this._store.replaceReducer(combinedReducer);
+      replaceReducer.call(this);
     }
   }
 
-  // Load additional middlewares here.
+  // connect(component, modelName) {
+  //   invariant(
+  //     React.isValidElement(component),
+  //     'app.connect: component connected should be a React element',
+  //   );
+  // }
+
+  // Load additional middlewares to the app.
   use(newEnhancers) {
     invariant(
       Array.isArray(newEnhancers),
@@ -137,7 +148,16 @@ class Lucio {
     this._enhancers.push(...newEnhancers);
   }
 
-  // Add extra reducers here.
+  // Load additional middlewares from the app.
+  unuse(enhancer) {
+    invariant(
+      Array.isArray(enhancer),
+      'app.use: new enhancers should be an array',
+    );
+    this._enhancers.push(...enhancer);
+  }
+
+  // Add extra reducers to the app.
   link(newExtraReducers) {
     invariant(
       isPlainObject(newExtraReducers),
@@ -152,6 +172,25 @@ class Lucio {
         `app.link: reducer '${newExtraReducerNames[i]}' should be a function.`,
       );
       this._extraReducers[newExtraReducerNames[i]] = newExtraReducer;
+    }
+
+    // If app already started, replace the reducer.
+    if (this._store) {
+      replaceReducer.call(this);
+    }
+  }
+
+  // Remove extra reducer from the app.
+  unlink(extraReducer) {
+    invariant(
+      this._extraReducers[extraReducer],
+      `app.unlink: '${extraReducer}' is not linked yet.'`,
+    );
+    delete this._extraReducers[extraReducer];
+
+    // Dynamically remove model if app already started.
+    if (this._store) {
+      replaceReducer.call(this);
     }
   }
 
@@ -204,12 +243,13 @@ class Lucio {
 
     // Add logger middle by default and remove it on production.
     if (!this._config.disableLogger && process.env.NODE_ENV !== 'production') {
-      this._enhancers.push(logger);
+      this._enhancers.push({ name: 'logger', enhancer: logger });
     }
 
+    const enhancers = this._enhancers.map(e => (e.enhancer ? e.enhancer : e));
     const enhancer = compose(
       install(),
-      applyMiddleware(...this._enhancers),
+      applyMiddleware(...enhancers),
     );
 
     const store = enhancer(createStore)(combinedReducer, this._initialState);
