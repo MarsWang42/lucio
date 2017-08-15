@@ -146,15 +146,33 @@ class Lucio {
       'app.use: new enhancers should be an array',
     );
     this._enhancers.push(...newEnhancers);
+    if (this._store) {
+      this._dynamics.push(
+        ...newEnhancers.map(e => (e.enhancer ? e.enhancer : e)),
+      );
+    }
   }
 
   // Load additional middlewares from the app.
-  unuse(enhancer) {
+  unuse(enhancers) {
     invariant(
-      Array.isArray(enhancer),
-      'app.use: new enhancers should be an array',
+      Array.isArray(enhancers) || typeof enhancers === 'string',
+      'app.unuse: enhancers should be either an array or a string',
     );
-    this._enhancers.push(...enhancer);
+    if (typeof enhancers === 'string') enhancers = [enhancers];
+
+    // Save the indexes of enhancers to be removed.
+    for (let i = 0, l = enhancers.length; i < l; i += 1) {
+      const index = this._enhancers.findIndex(e => e.name === enhancers[i]);
+      invariant(
+        index >= 0,
+        `app.unuse: cannot find enhancer ${enhancers[i]} `,
+      );
+      this._enhancers.splice(index, 1);
+      if (this._store) {
+        this._dynamics.splice(index, 1);
+      }
+    }
   }
 
   // Add extra reducers to the app.
@@ -246,10 +264,20 @@ class Lucio {
       this._enhancers.push({ name: 'logger', enhancer: logger });
     }
 
-    const enhancers = this._enhancers.map(e => (e.enhancer ? e.enhancer : e));
+    this._dynamics = this._enhancers.map(e => (e.enhancer ? e.enhancer : e));
+
+    const dynamicEnhancers = store => next => (action) => {
+      const middlewareAPI = {
+        getState: store.getState,
+        dispatch: act => store.dispatch(act),
+      };
+      const chain = this._dynamics.map(middleware => middleware(middlewareAPI));
+      return compose(...chain)(next)(action);
+    };
+
     const enhancer = compose(
       install(),
-      applyMiddleware(...enhancers),
+      applyMiddleware(dynamicEnhancers),
     );
 
     const store = enhancer(createStore)(combinedReducer, this._initialState);

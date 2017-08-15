@@ -8,9 +8,21 @@ const app = new Lucio();
 app.model(todoModel);
 app.model(counterModel);
 
+// const logger = store => next => action => {
+//   console.group(action.type)
+//   console.info('dispatching', action)
+//   let result = next(action)
+//   console.log('next state', store.getState())
+//   console.groupEnd(action.type)
+//   return result
+// }
+
 app.view(routes);
 
 app.start('main');
+
+// app.use([{ name: 'log', enhancer: logger }]);
+// app.unuse(['log', 'logger']);
 
 /* Uncomment this part to try linking your own reducer. */
 // const newReducer = {
